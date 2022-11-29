@@ -34,7 +34,7 @@
         $email = $_POST["email"];
         $kritik = $_POST["kritik"];
         try {
-  $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+  $conn = new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
   // set the PDO error mode to exception
   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -74,13 +74,9 @@ class TableRows extends RecursiveIteratorIterator {
   }
 }
 
-$servername = "localhost";
-$username = "username";
-$password = "password";
-$dbname = "myDBPDO";
 
 try {
-  $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+  $conn = new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   $stmt = $conn->prepare("SELECT id, firstname, lastname FROM MyGuests");
   $stmt->execute();
