@@ -41,7 +41,7 @@
   // begin the transaction
   $conn->beginTransaction();
   // our SQL statements
-  $conn->exec("INSERT INTO MyGuests (firstname, lastname, email)
+  $conn->exec("INSERT INTO myDB.MyGuests (firstname, lastname, email)
   VALUES ($nama, $kritik, $email)");
 
   // commit the transaction
@@ -78,7 +78,7 @@ class TableRows extends RecursiveIteratorIterator {
 try {
   $conn = new PDO("pgsql:host=$servername;dbname=$dbname", $username, $password);
   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  $stmt = $conn->prepare("SELECT id, firstname, lastname FROM MyGuests");
+  $stmt = $conn->prepare("SELECT id, firstname, lastname FROM myDB.MyGuests");
   $stmt->execute();
 
   // set the resulting array to associative
