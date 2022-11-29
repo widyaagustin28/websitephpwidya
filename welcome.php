@@ -26,33 +26,76 @@
         Kritik dan Saran:
         <?php echo $_POST["kritik"];
 
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "mydb";
+        $servername = "ec2-34-235-31-124.compute-1.amazonaws.com"; 
+        $username = "hmuleddupvjlqq"; 
+        $password = "61bdcc145d14048026d4157aa48cf6a37c5dd771a64473921e5b14ef35e66d5f"; 
+        $dbname = "d1nla41q66dkk5";
         $nama = $_POST["nama"];
         $email = $_POST["email"];
         $kritik = $_POST["kritik"];
+        try {
+  $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+  // set the PDO error mode to exception
+  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        //Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        //Check connection
-        if ($conn->connect_error) {
-            die("Connection failed:" . $conn->connect_error);
-        }
+  // begin the transaction
+  $conn->beginTransaction();
+  // our SQL statements
+  $conn->exec("INSERT INTO MyGuests (firstname, lastname, email)
+  VALUES ($nama, $kritik, $email)");
 
-        $sql = "INSERT INTO myguests (nama, email, kritik )
-        VALUES ('$nama','$email','$kritik')";
+  // commit the transaction
+  $conn->commit();
+  echo "New records created successfully";
+} catch(PDOException $e) {
+  // roll back the transaction if something failed
+  $conn->rollback();
+  echo "Error: " . $e->getMessage();
+}
 
-        if ($conn->query($sql) === TRUE) {
-            echo "<br>" . "New records created succesfully";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
+echo "<table style='border: solid 1px black;'>";
+echo "<tr><th>Id</th><th>Firstname</th><th>Lastname</th></tr>";
 
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        $sql = "SELECT nama,email,kritik FROM myguests";
-        ?>
+class TableRows extends RecursiveIteratorIterator {
+  function __construct($it) {
+    parent::__construct($it, self::LEAVES_ONLY);
+  }
+
+  function current() {
+    return "<td style='width:150px;border:1px solid black;'>" . parent::current(). "</td>";
+  }
+
+  function beginChildren() {
+    echo "<tr>";
+  }
+
+  function endChildren() {
+    echo "</tr>" . "\n";
+  }
+}
+
+$servername = "localhost";
+$username = "username";
+$password = "password";
+$dbname = "myDBPDO";
+
+try {
+  $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  $stmt = $conn->prepare("SELECT id, firstname, lastname FROM MyGuests");
+  $stmt->execute();
+
+  // set the resulting array to associative
+  $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+  foreach(new TableRows(new RecursiveArrayIterator($stmt->fetchAll())) as $k=>$v) {
+    echo $v;
+  }
+} catch(PDOException $e) {
+  echo "Error: " . $e->getMessage();
+}
+$conn = null;
+echo "</table>";
+?>
     </div>
 </body>
 
